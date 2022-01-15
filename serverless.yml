@@ -1,3 +1,5 @@
+# Indentation is super important. If code is not working, First you need to check the indentation
+
 service:
   name: auction-service
 
@@ -9,7 +11,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   memorySize: 256
-  stage: ${opt:stage, 'dev'}
+  stage: ${opt:stage, 'dev'} # setting up variables, second args is the default value
   
 functions:
   hello:
@@ -17,4 +19,12 @@ functions:
     events:
       - http:
           method: GET
-          path: /hello
+          path: /hello   
+          # when events triggered, handler will be executed
+
+# custom:
+#   bundle:
+#     linting: false     # checking errors off => false
+
+  
+  

@@ -1,3 +1,9 @@
+import { v4 as uuid } from 'uuid';
+import AWS from 'aws-sdk';
+
+// Static!! Perform interactions with DynamoDB Table (Lots of methods, get, patch, put, query and so on)
+const dynamodb = new AWS.DynamoDB.DocumentClient();
+
 async function createAuction(event, context) {
   // we need 2 args when lambda is executed 'evevt', 'context'
   // 'event' => Obj include all the info about body, headers, metadata, etc
@@ -7,10 +13,18 @@ async function createAuction(event, context) {
   const now = new Date();
 
   const auction = {
+    id: uuid(),
     title,
     status: 'OPEN',
     createAt: now.toISOString(),
   };
+  
+  // Use Promise, and await this put method executed and return ID and continue with the result
+  // Has to be Capitalized !!
+  await dynamodb.put({
+    TableName: 'AuctionsTable',
+    Item: auction, 
+  }).promise(); 
 
   return {
     statusCode: 201, // resource created code

@@ -7,12 +7,20 @@ plugins:
   - serverless-bundle
   - serverless-pseudo-parameters
 
+
 provider:
   name: aws
   runtime: nodejs12.x
   memorySize: 256
   stage: ${opt:stage, 'dev'} # setting up variables, second args is the default value
   region: eu-west-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        # Copy ARN from DynamoDB/Table/Additional Info. Not recommended put arn here directly for revising reason. we need 'serverless-pseudo-parameters' here for better performance #{AWS::Region} #{AWS::AccountId} 
+      Resource:
+        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/AuctionsTable
 
 # aws need to use cloudFormation syntax (Capitalized)
 # DynamoDB creates Schemaless database using this resources
@@ -44,9 +52,9 @@ functions:
           path: /auction  
           # when events triggered, handler will be executed
 
-# custom:
-#   bundle:
-#     linting: false     # checking errors off => false
+custom:
+  bundle:
+    linting: false     # checking errors off => false
 
   
   

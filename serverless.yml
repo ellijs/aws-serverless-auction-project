@@ -15,6 +15,7 @@ provider:
   region: eu-west-1
 
 # aws need to use cloudFormation syntax (Capitalized)
+# DynamoDB creates Schemaless database using this resources
 resources:
   Resources:
     AuctionsTable:

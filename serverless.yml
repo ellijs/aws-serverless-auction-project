@@ -14,13 +14,33 @@ provider:
   stage: ${opt:stage, 'dev'} # setting up variables, second args is the default value
   region: eu-west-1
 
+# aws need to use cloudFormation syntax (Capitalized)
+resources:
+  Resources:
+    AuctionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: AuctionsTable
+        BillingMode: PAY_PER_REQUEST
+        # Schemaless => Setting up Primary key Attributes
+        AttributeDefinitions: # array of OBJ
+          - AttributeName: id # OBJ
+            AttributeType: S # Capital C => string
+        # This whole Keyschema is the primary key
+        # Tell DynamoDB to I want this as a HASH
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH # this is the partition key, 'ID'
+
+
 functions:
-  hello:
-    handler: src/handlers/hello.handler
+  createAuction:
+    handler: src/handlers/createAuction.handler
     events:
+     # function will be triggered when we make this events requests
       - http:
-          method: GET
-          path: /hello   
+          method: POST
+          path: /auction  
           # when events triggered, handler will be executed
 
 # custom:

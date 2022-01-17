@@ -22,7 +22,7 @@ async function createAuction(event, context) {
   // Use Promise, and await this put method executed and return ID and continue with the result
   // Has to be Capitalized !!
   await dynamodb.put({
-    TableName: 'AuctionsTable',
+    TableName: process.env.AUCTIONS_TABLE_NAME, //'AuctionsTable',
     Item: auction, 
   }).promise(); 
 

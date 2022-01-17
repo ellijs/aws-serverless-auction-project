@@ -1,0 +1,14 @@
+ AuctionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: AuctionsTable-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        # Schemaless => Setting up Primary key Attributes
+        AttributeDefinitions: # array of OBJ
+          - AttributeName: id # OBJ
+            AttributeType: S # Capital C => string
+        # This whole Keyschema is the primary key
+        # Tell DynamoDB to I want this as a HASH
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH # this is the partition key, 'ID'

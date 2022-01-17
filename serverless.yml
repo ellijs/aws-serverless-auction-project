@@ -14,34 +14,17 @@ provider:
   memorySize: 256
   stage: ${opt:stage, 'dev'} # setting up variables, second args is the default value
   region: eu-west-1
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:PutItem
-        # Copy ARN from DynamoDB/Table/Additional Info. Not recommended put arn here directly for revising reason. we need 'serverless-pseudo-parameters' here for better performance #{AWS::Region} #{AWS::AccountId} 
-      Resource:
-        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/AuctionsTable
+  environment: # setting up table variable, so we do not hard code it
+    AUCTIONS_TABLE_NAME: ${self:custom.AuctionsTable.name}
+  iamRoleStatements: # this is an array. Import file usinf ${file():} syntax
+    - ${file(iam/AuctionsTableIAM.yml):AuctionsTableIAM}
+   
 
 # aws need to use cloudFormation syntax (Capitalized)
 # DynamoDB creates Schemaless database using this resources
 resources:
   Resources:
-    AuctionsTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: AuctionsTable
-        BillingMode: PAY_PER_REQUEST
-        # Schemaless => Setting up Primary key Attributes
-        AttributeDefinitions: # array of OBJ
-          - AttributeName: id # OBJ
-            AttributeType: S # Capital C => string
-        # This whole Keyschema is the primary key
-        # Tell DynamoDB to I want this as a HASH
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH # this is the partition key, 'ID'
-
-
+    AuctionsTable: ${file(resources/AuctionsTable.yml):AuctionsTable}
 functions:
   createAuction:
     handler: src/handlers/createAuction.handler
@@ -55,6 +38,9 @@ functions:
 custom:
   bundle:
     linting: false     # checking errors off => false
+  AuctionsTable:
+    name: !Ref AuctionsTable # Ref => returns table name
+    arn: !GetAtt AuctionsTable.Arn 
 
   
   

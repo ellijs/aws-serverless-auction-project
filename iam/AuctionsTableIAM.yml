@@ -1,0 +1,9 @@
+AuctionsTableIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:PutItem
+        # Copy ARN from DynamoDB/Table/Additional Info. Not recommended put arn here directly for revising reason. we need 'serverless-pseudo-parameters' here for better performance #{AWS::Region} #{AWS::AccountId} 
+  Resource:
+    - ${self:custom.AuctionsTable.arn}
+       
+        # - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/AuctionsTable

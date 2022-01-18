@@ -36,7 +36,7 @@ functions:
           method: POST
           path: /auction  
           # when events triggered, handler will be executed
-          authorizer: auth # user Auth
+          authorizer: ${self:custom.authorizer} # user ARN
   
   getAuctions:
     handler: src/handlers/getAuctions.handler
@@ -44,6 +44,7 @@ functions:
       - http:
           method: GET
           path: /auctions
+          authorizer: ${self:custom.authorizer}
 
   getAuction:
     handler: src/handlers/getAuction.handler
@@ -51,6 +52,7 @@ functions:
       - http:
           method: GET
           path: /auction/{id}
+          authorizer: ${self:custom.authorizer}
 
   placeBid:
     handler: src/handlers/placeBid.handler
@@ -58,6 +60,7 @@ functions:
       - http: 
           method: PATCH
           path: /auction/{id}/bid
+          authorizer: ${self:custom.authorizer}
 
   processAuctions:
     handler: src/handlers/processAuctions.handler
@@ -67,6 +70,8 @@ functions:
       # cron()
 
 custom:
+  authorizer: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:auth-service-${self:provider.stage}-auth
+  # Be cautious with # and $ !!
   bundle:
     linting: false     # checking errors off => false
   AuctionsTable:

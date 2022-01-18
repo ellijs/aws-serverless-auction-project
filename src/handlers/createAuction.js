@@ -25,6 +25,9 @@ async function createAuction(event, context) {
     title,
     status: 'OPEN',
     createAt: now.toISOString(),
+    highestBid: {
+      amount: 0,
+    }
   };
   
   // Use Promise, and await this put method executed and return ID and continue with the result

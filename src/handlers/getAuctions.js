@@ -1,11 +1,17 @@
 import AWS from "aws-sdk";
 import commonMiddleware from "../lib/commonMiddleware";
 import createError from "http-errors";
+import validator from '@middy/validator'
+import getAuctionsSchema from '../lib/schemas/getAuctionSchema'
 
 // Static!! Perform interactions with DynamoDB Table (Lots of methods, get, patch, put, query and so on)
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 // API EndPoint => {{AUCTIONS_HOST}}/auctions?status=OPEN (or CLOSED)
+
+// JSON Schema : we can validate schema by using middy
+
+
 
 async function getAuctions(event, context) {
   const { status } = event.queryStringParameters;
@@ -49,4 +55,13 @@ async function getAuctions(event, context) {
   };
 }
 
-export const handler = commonMiddleware(getAuctions);
+export const handler = commonMiddleware(getAuctions)
+    .use(validator({ 
+        inputSchema: getAuctionsSchema,
+        ajvOptions: { 
+            useDefaults: true,
+            strict: false,
+        },
+    })
+)
+

@@ -3,6 +3,10 @@ import commonMiddleware from '../lib/commonMiddleware';
 import createError from "http-errors";
 import { getAuctionById } from './getAuction'
 
+// Validating Schema
+import validator from '@middy/validator'
+import placeBidSchema from '../lib/schemas/placeBidSchema'
+
 // Static!! Perform interactions with DynamoDB Table (Lots of methods, get, patch, put, query and so on)
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
@@ -48,5 +52,12 @@ async function placeBid(event, context) {
 }
 
 export const handler = commonMiddleware(placeBid)
+    .use(validator({ 
+        inputSchema: placeBidSchema,
+        ajvOptions: { 
+            strict: true,
+        },
+    })
+)
 
 // When tryign this function with Postman, Patch data body has to be raw, and 'JSON' format !! Or, it throws an error.

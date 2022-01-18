@@ -35,12 +35,19 @@ functions:
           path: /auction  
           # when events triggered, handler will be executed
   
-  getAuction:
+  getAuctions:
     handler: src/handlers/getAuctions.handler
     events:
       - http:
           method: GET
           path: /auctions
+
+  getAuction:
+    handler: src/handlers/getAuction.handler
+    events:
+      - http:
+          method: GET
+          path: /auction/{id}
 
 custom:
   bundle:

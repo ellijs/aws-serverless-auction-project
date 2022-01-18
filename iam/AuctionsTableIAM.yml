@@ -5,8 +5,13 @@ AuctionsTableIAM:
     - dynamodb:Scan
     - dynamodb:GetItem
     - dynamodb:UpdateItem
+    - dynamodb:Query
         # Copy ARN from DynamoDB/Table/Additional Info. Not recommended put arn here directly for revising reason. we need 'serverless-pseudo-parameters' here for better performance #{AWS::Region} #{AWS::AccountId} 
   Resource:
     - ${self:custom.AuctionsTable.arn}
-       
-        # - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/AuctionsTable
+      # - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/AuctionsTable
+
+    # - ${self:custom.AuctionsTable.arn}/index/statusAndEndDate
+    # Query => GSI copy tables => they need own arn like above OR, below
+    - !Join ['/', [ '${self:custom.AuctionsTable.arn}', 'index', 'statusAndEndDate' ]]
+    # connect them together

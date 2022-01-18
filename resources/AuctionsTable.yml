@@ -9,6 +9,22 @@
             AttributeType: S # Capital C => string
         # This whole Keyschema is the primary key
         # Tell DynamoDB to I want this as a HASH
+          - AttributeName: status
+            AttributeType: S
+          - AttributeName: endingAt
+            AttributeType: S
+        # if we set up attributes, we need to give them schema, id is KeySchema, and the rest we put that in GlobalSecondaryIndexes
         KeySchema:
           - AttributeName: id
-            KeyType: HASH # this is the partition key, 'ID'
+            KeyType: HASH # this is the partition key, 'ID'  
+                   
+        GlobalSecondaryIndexes:
+          - IndexName: statusAndEndDate
+            KeySchema: 
+              - AttributeName: status
+                KeyType: HASH
+              - AttributeName: endingAt
+                KeyType: RANGE           
+            Projection:
+              ProjectionType: ALL 
+            # projection => when we query, back in there they copy tables with attributes, so if we put 'ALL' they copy all attributes

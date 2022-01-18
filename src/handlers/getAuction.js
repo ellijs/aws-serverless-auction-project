@@ -5,6 +5,7 @@ import createError from "http-errors";
 // Static!! Perform interactions with DynamoDB Table (Lots of methods, get, patch, put, query and so on)
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
+
 export async function getAuctionById(id) {
     let auction;
 
@@ -32,10 +33,9 @@ export async function getAuctionById(id) {
 }
 
 
-
 async function getAuction(event, context) {
   const { id } = event.pathParameters;
-  const auction = await getAuctionById(id)
+  const auction = await getAuctionById(id) // put this 'getAuctionById' separately so we can use that function to another handler
 
   return {
     statusCode: 200,

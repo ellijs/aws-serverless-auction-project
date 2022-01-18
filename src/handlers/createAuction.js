@@ -15,16 +15,20 @@ async function createAuction(event, context) {
   // 'event' => Obj include all the info about body, headers, metadata, etc
   // 'context' => custome data with middleware, ex) auth, id of user
 
-  const { title } = JSON.parse(event.body);
+  const { title } = event.body;
   // const { title } = event.body;
   
   const now = new Date();
+  const endDate = new Date();
+  endDate.setHours(now.getHours() + 1);
+  // endDate.setDays(now.getDays() + 1);
 
   const auction = {
     id: uuid(),
     title,
     status: 'OPEN',
     createAt: now.toISOString(),
+    endingAt: endDate.toISOString(),
     highestBid: {
       amount: 0,
     }

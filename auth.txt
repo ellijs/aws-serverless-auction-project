@@ -1,7 +1,0 @@
-curl --location --request POST 'https://sls-practice.eu.auth0.com/oauth/token' \
---header 'Content-Type: application/x-www-form-urlencoded' \
---data-urlencode 'client_id=xkRWVrupEnmehpWFBtMRgA07OkRHWL1i' \
---data-urlencode 'username=ellijs@hotmail.com' \
---data-urlencode 'password=Andy5931!' \
---data-urlencode 'grant_type=password' \
---data-urlencode 'scope=openid'

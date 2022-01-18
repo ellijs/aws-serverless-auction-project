@@ -1,24 +1,47 @@
-import AWS from 'aws-sdk';
-import commonMiddleware from '../lib/commonMiddleware';
-import createError from 'http-errors'
+import AWS from "aws-sdk";
+import commonMiddleware from "../lib/commonMiddleware";
+import createError from "http-errors";
 
 // Static!! Perform interactions with DynamoDB Table (Lots of methods, get, patch, put, query and so on)
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
+// API EndPoint => {{AUCTIONS_HOST}}/auctions?status=OPEN (or CLOSED)
+
 async function getAuctions(event, context) {
+  const { status } = event.queryStringParameters;
   let auctions;
 
-  try {
-      const result = await dynamodb.scan({
-          TableName: process.env.AUCTIONS_TABLE_NAME
-      }).promise();
+  const params = {
+    TableName: process.env.AUCTIONS_TABLE_NAME,
+    IndexName: "statusAndEndDate",
+    KeyConditionExpression: '#status = :status',
+    ExpressionAttributeValues: {
+      ':status': status,
+    },
+    ExpressionAttributeNames: {
+      '#status': 'status',
+    },
+  };
 
-      auctions = result.Items
+  try {
+    const result = await dynamodb.query(params).promise();
+
+    auctions = result.Items;
   } catch (error) {
-      console.error(error);
-      throw new createError.InternalServerError(error)
+    console.error(error);
+    throw new createError.InternalServerError(error);
   }
 
+  //   try {
+  //       const result = await dynamodb.scan({
+  //           TableName: process.env.AUCTIONS_TABLE_NAME
+  //       }).promise();
+
+  //       auctions = result.Items
+  //   } catch (error) {
+  //       console.error(error);
+  //       throw new createError.InternalServerError(error)
+  //   }
 
   return {
     statusCode: 200,
@@ -26,4 +49,4 @@ async function getAuctions(event, context) {
   };
 }
 
-export const handler = commonMiddleware(getAuctions)
+export const handler = commonMiddleware(getAuctions);

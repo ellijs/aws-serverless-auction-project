@@ -20,7 +20,8 @@ async function createAuction(event, context) {
   // 'context' => custome data with middleware, ex) auth, id of user
 
   const { title } = event.body;
-  // const { title } = event.body;
+  const { email } = event.requestContext.authorizer;
+
   
   const now = new Date();
   const endDate = new Date();
@@ -35,7 +36,8 @@ async function createAuction(event, context) {
     endingAt: endDate.toISOString(),
     highestBid: {
       amount: 0,
-    }
+    },
+    seller: email,
   };
   
   // Use Promise, and await this put method executed and return ID and continue with the result

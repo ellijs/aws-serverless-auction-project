@@ -1,5 +1,5 @@
-# Indentation is super important. If code is not working, First you need to check the indentation
 
+   
 service:
   name: auction-service
 
@@ -7,37 +7,32 @@ plugins:
   - serverless-bundle
   - serverless-pseudo-parameters
 
-
 provider:
   name: aws
   runtime: nodejs12.x
   memorySize: 256
-  stage: ${opt:stage, 'dev'} # setting up variables, second args is the default value
+  stage: ${opt:stage, 'dev'}
   region: eu-west-1
-  environment: # setting up table variable, so we do not hard code it
+  environment:
     AUCTIONS_TABLE_NAME: ${self:custom.AuctionsTable.name}
-  iamRoleStatements: # this is an array. Import file usinf ${file():} syntax
+    MAIL_QUEUE_URL: ${self:custom.MailQueue.url}
+  iamRoleStatements:
     - ${file(iam/AuctionsTableIAM.yml):AuctionsTableIAM}
-   
+    - ${file(iam/MailQueueIAM.yml):MailQueueIAM}
 
-# aws need to use cloudFormation syntax (Capitalized)
-# DynamoDB creates Schemaless database using this resources
 resources:
   Resources:
     AuctionsTable: ${file(resources/AuctionsTable.yml):AuctionsTable}
-
+    
 functions:
-
   createAuction:
     handler: src/handlers/createAuction.handler
     events:
-     # function will be triggered when we make this events requests
       - http:
           method: POST
-          path: /auction  
-          # when events triggered, handler will be executed
-          authorizer: ${self:custom.authorizer} # user ARN
-  
+          path: /auction
+          authorizer: ${self:custom.authorizer}
+
   getAuctions:
     handler: src/handlers/getAuctions.handler
     events:
@@ -57,26 +52,23 @@ functions:
   placeBid:
     handler: src/handlers/placeBid.handler
     events:
-      - http: 
+      - http:
           method: PATCH
-          path: /auction/{id}/bid
+          path: auction/{id}/bid
           authorizer: ${self:custom.authorizer}
 
   processAuctions:
     handler: src/handlers/processAuctions.handler
-    # events: 
-    #   - schedule: rate(1 minute) 
-    # we comment it out now bc it's only for practicing purposes, but deveopling we use this.
-      # cron()
+    events:
+      - schedule: rate(1 minute)
 
 custom:
   authorizer: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:auth-service-${self:provider.stage}-auth
-  # Be cautious with # and $ !!
-  bundle:
-    linting: false     # checking errors off => false
   AuctionsTable:
-    name: !Ref AuctionsTable # Ref => returns table name
-    arn: !GetAtt AuctionsTable.Arn 
-
-  
-  
+    name: !Ref AuctionsTable
+    arn: !GetAtt AuctionsTable.Arn
+  MailQueue:
+    arn: ${cf:notification-service-${self:provider.stage}.MailQueueArn}
+    url: ${cf:notification-service-${self:provider.stage}.MailQueueUrl}
+  bundle:
+    linting: false

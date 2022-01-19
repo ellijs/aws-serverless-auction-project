@@ -2,7 +2,7 @@ import middy from '@middy/core'
 import httpJsonBodyParser from '@middy/http-json-body-parser';
 import httpEventNormalizer from '@middy/http-event-normalizer';
 import httpErrorHandler from '@middy/http-error-handler';
-import cors from '@middy/http-cors';
+// import cors from '@middy/http-cors';
 
 // Two below are for detailed error messages for 400 (Bad Request) responses
 // can be replace @middy/http-error-handler
@@ -16,5 +16,5 @@ export default handler => middy(handler)
         httpEventNormalizer(),
         httpErrorHandler(),
         JSONErrorHandlerMiddleware(),
-        cors(),
+        // cors(),
     ])
